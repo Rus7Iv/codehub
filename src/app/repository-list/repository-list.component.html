@@ -1,0 +1,5 @@
+<div *ngFor="let repo of repositories">
+  <h2>{{ repo.name }}</h2>
+  <p>{{ repo.description }}</p>
+  <a [routerLink]="['/repository', repo.id]">Подробнее</a>
+</div>
