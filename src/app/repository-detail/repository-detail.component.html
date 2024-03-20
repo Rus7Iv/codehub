@@ -1,2 +1,4 @@
 <h2>{{ repository?.name }}</h2>
 <p>{{ repository?.description }}</p>
+<div *ngIf="readme" [innerHTML]="readme"></div>
+<div *ngIf="!readme">Файл README не найден</div>
