@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { IRepository } from '../repository-detail/repository-detail.component';
+import { GithubService } from '../../services/github.service';
 
 @Component({
   selector: 'app-repository-list',
@@ -10,10 +10,10 @@ import { IRepository } from '../repository-detail/repository-detail.component';
 export class RepositoryListComponent implements OnInit {
   repositories: IRepository[] = [];
 
-  constructor(private http: HttpClient) { }
+  constructor(private githubService: GithubService) { }
 
   ngOnInit(): void {
-    this.http.get<IRepository[]>('https://api.github.com/repositories').subscribe((data: IRepository[]) => {
+    this.githubService.getRepositories().subscribe((data: IRepository[]) => {
       this.repositories = data;
     });
   }

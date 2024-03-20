@@ -2,6 +2,7 @@
 <p>{{ repository?.description }}</p>
 <p>{{ repository?.forks_count }}</p>
 <p>{{ repository?.stargazers_count }}</p>
+<p>{{ repository?.language }}</p>
 
 <div *ngFor="let commit of commits">
   <h3>{{ commit.commit.author.name }}</h3>

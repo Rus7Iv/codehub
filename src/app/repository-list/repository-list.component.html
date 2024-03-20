@@ -1,5 +1,7 @@
 <div *ngFor="let repo of repositories">
   <h2>{{ repo.name }}</h2>
   <p>{{ repo.description }}</p>
+  <p>{{ repo.owner.login }}</p>
+  <img [src]="repo.owner.avatar_url" alt="avatar" width="100px">
   <a [routerLink]="['/repository', repo.id]">Подробнее</a>
 </div>

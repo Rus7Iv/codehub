@@ -1,39 +1,8 @@
-// repository-detail.component.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { catchError, switchMap } from 'rxjs/operators';
-import { of } from 'rxjs';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-
-interface IContentResponse {
-  content: string;
-}
-
-interface IFile {
-  name: string;
-  url: string;
-}
-
-export interface IRepository {
-  id: number;
-  name: string;
-  description: string;
-  forks_count: number;
-  stargazers_count: number;
-}
-
-interface ICommit {
-  sha: string;
-  commit: {
-    author: {
-      name: string;
-      date: string;
-    };
-    message: string;
-  };
-}
-
+import { GithubService } from '../../services/github.service';
+import { ICommit, IContentResponse, IRepository } from '../../interfaces';
 
 @Component({
   selector: 'app-repository-detail',
@@ -43,40 +12,30 @@ interface ICommit {
 export class RepositoryDetailComponent implements OnInit {
   repository: IRepository | null = null;
   readme: SafeHtml | null = null;
-  commits: ICommit[] | null = null;
+  commits: ICommit[] | null = null; // Объявите переменную commits
 
   constructor(
     private route: ActivatedRoute,
-    private http: HttpClient,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private githubService: GithubService // Внедрите сервис
   ) { }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    this.http.get<IRepository>(`https://api.github.com/repositories/${id}`).subscribe((data: IRepository) => {
-      this.repository = data;
-    });
+    if (id !== null) { // Проверьте, что id не равно null
+      this.githubService.getRepository(id).subscribe((data: IRepository) => {
+        this.repository = data;
+      });
 
-    this.http.get<ICommit[]>(`https://api.github.com/repos/mojombo/god/commits`).subscribe((data: ICommit[]) => {
-      this.commits = data;
-    });
+      this.githubService.getCommits('mojombo/god').subscribe((data: ICommit[]) => {
+        this.commits = data;
+      });
 
-    this.http.get<IFile[]>(`https://api.github.com/repositories/${id}/contents`).pipe(
-      switchMap((files: IFile[]) => {
-        const readmeFile = files.find(file => file.name.toLowerCase() === 'readme.md');
-        if (readmeFile) {
-          return this.http.get<IContentResponse>(readmeFile.url);
-        } else {
-          console.log('Файл README не найден');
-          return of({ content: '' });
-        }
-      }),
-      catchError((error: HttpErrorResponse) => {
-        console.log('Ошибка при получении файла README:', error.message);
-        return of({ content: '' });
-      })
-    ).subscribe((data: IContentResponse) => {
-      this.readme = this.sanitizer.bypassSecurityTrustHtml(atob(data.content));
-    });
+      this.githubService.getReadme(id).subscribe((data: IContentResponse) => {
+        this.readme = this.sanitizer.bypassSecurityTrustHtml(atob(data.content));
+      });
+    }
   }
 }
+export { IRepository };
+
