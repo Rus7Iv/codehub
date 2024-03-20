@@ -1,4 +1,13 @@
 <h2>{{ repository?.name }}</h2>
 <p>{{ repository?.description }}</p>
+<p>{{ repository?.forks_count }}</p>
+<p>{{ repository?.stargazers_count }}</p>
+
+<div *ngFor="let commit of commits">
+  <h3>{{ commit.commit.author.name }}</h3>
+  <p>{{ commit.commit.message }}</p>
+  <p>{{ commit.commit.author.date }}</p>
+</div>
+
 <div *ngIf="readme" [innerHTML]="readme"></div>
 <div *ngIf="!readme">Файл README не найден</div>

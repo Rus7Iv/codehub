@@ -1,11 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-
-export interface IRepository {
-  id: number;
-  name: string;
-  description: string;
-}
+import { IRepository } from '../repository-detail/repository-detail.component';
 
 @Component({
   selector: 'app-repository-list',
