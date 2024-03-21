@@ -13,31 +13,32 @@ import { Router, ActivatedRoute } from '@angular/router';
 export class RepositoryListComponent implements OnInit {
   repositories: IRepository[] = [];
   searchControl = new FormControl();
-  selectedLanguage: string = '';
+  languageControl = new FormControl(); // новый FormControl для языка программирования
 
   constructor(private githubService: GithubService, private router: Router, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       this.searchControl.setValue(params['searchTerm'] || '');
-      this.selectedLanguage = params['language'] || '';
-      this.performSearch(this.searchControl.value, this.selectedLanguage);
+      this.languageControl.setValue(params['language'] || ''); // используйте languageControl
+      this.performSearch(this.searchControl.value, this.languageControl.value);
     });
 
     this.searchControl.valueChanges.pipe(
       debounceTime(1000),
       distinctUntilChanged()
     ).subscribe(searchTerm => {
-      this.updateUrl(searchTerm, this.selectedLanguage);
-      this.performSearch(searchTerm, this.selectedLanguage);
+      this.updateUrl(searchTerm, this.languageControl.value);
+      this.performSearch(searchTerm, this.languageControl.value);
     });
-  }
 
-  onLanguageSelect(event: Event): void {
-    const selectElement = event.target as HTMLSelectElement;
-    this.selectedLanguage = selectElement.value;
-    this.updateUrl(this.searchControl.value, this.selectedLanguage);
-    this.performSearch(this.searchControl.value, this.selectedLanguage);
+    this.languageControl.valueChanges.pipe(
+      debounceTime(1000),
+      distinctUntilChanged()
+    ).subscribe(language => {
+      this.updateUrl(this.searchControl.value, language);
+      this.performSearch(this.searchControl.value, language);
+    });
   }
 
   updateUrl(searchTerm: string, language: string): void {
@@ -49,11 +50,11 @@ export class RepositoryListComponent implements OnInit {
   }
 
   performSearch(searchTerm: string, language: string): void {
-    if (searchTerm.trim() === '') {
+    if (searchTerm.trim() === '' && language.trim() === '') {
       this.githubService.getRepositories().subscribe((data: IRepository[]) => {
         this.repositories = data;
       });
-    } else {
+    } else if (searchTerm.trim() !== '' || language.trim() !== '') {
       this.githubService.searchRepositories(searchTerm, language).subscribe((data: IRepository[]) => {
         this.repositories = data;
       });

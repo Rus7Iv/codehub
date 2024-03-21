@@ -40,10 +40,11 @@ export class GithubService {
   }
 
   searchRepositories(searchTerm: string, language: string) {
-    let params = new HttpParams().set('q', searchTerm);
+    let queryString = searchTerm;
     if (language) {
-      params = params.set('language', language);
+      queryString += `+language:${language}`;
     }
+    const params = new HttpParams().set('q', queryString);
     return this.http.get<IGithubSearchResponse>('https://api.github.com/search/repositories', { params }).pipe(
       map(response => response.items)
     );
