@@ -21,9 +21,7 @@ export class RepositoryListComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       this.searchControl.setValue(params['searchTerm'] || '');
       this.selectedLanguage = params['language'] || '';
-      this.githubService.searchRepositories(this.searchControl.value, this.selectedLanguage).subscribe((data: IRepository[]) => {
-        this.repositories = data;
-      });
+      this.performSearch(this.searchControl.value, this.selectedLanguage);
     });
 
     this.searchControl.valueChanges.pipe(
@@ -31,6 +29,7 @@ export class RepositoryListComponent implements OnInit {
       distinctUntilChanged()
     ).subscribe(searchTerm => {
       this.updateUrl(searchTerm, this.selectedLanguage);
+      this.performSearch(searchTerm, this.selectedLanguage);
     });
   }
 
@@ -38,6 +37,7 @@ export class RepositoryListComponent implements OnInit {
     const selectElement = event.target as HTMLSelectElement;
     this.selectedLanguage = selectElement.value;
     this.updateUrl(this.searchControl.value, this.selectedLanguage);
+    this.performSearch(this.searchControl.value, this.selectedLanguage);
   }
 
   updateUrl(searchTerm: string, language: string): void {
@@ -46,5 +46,17 @@ export class RepositoryListComponent implements OnInit {
       queryParams: { searchTerm, language },
       queryParamsHandling: 'merge'
     });
+  }
+
+  performSearch(searchTerm: string, language: string): void {
+    if (searchTerm.trim() === '') {
+      this.githubService.getRepositories().subscribe((data: IRepository[]) => {
+        this.repositories = data;
+      });
+    } else {
+      this.githubService.searchRepositories(searchTerm, language).subscribe((data: IRepository[]) => {
+        this.repositories = data;
+      });
+    }
   }
 }
