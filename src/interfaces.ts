@@ -32,3 +32,7 @@ export interface ICommit {
     message: string;
   };
 }
+
+export interface IGithubSearchResponse {
+  items: IRepository[];
+}

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { catchError, of, switchMap } from 'rxjs';
-import { ICommit, IContentResponse, IFile, IRepository } from '../interfaces';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { catchError, map, of, switchMap } from 'rxjs';
+import { IGithubSearchResponse, ICommit, IContentResponse, IFile, IRepository } from '../interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -36,6 +36,16 @@ export class GithubService {
         console.log('Ошибка при получении файла README:', error.message);
         return of({ content: '' });
       })
+    );
+  }
+
+  searchRepositories(searchTerm: string, language: string) {
+    let params = new HttpParams().set('q', searchTerm);
+    if (language) {
+      params = params.set('language', language);
+    }
+    return this.http.get<IGithubSearchResponse>('https://api.github.com/search/repositories', { params }).pipe(
+      map(response => response.items)
     );
   }
 }
