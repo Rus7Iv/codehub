@@ -13,14 +13,14 @@ import { Router, ActivatedRoute } from '@angular/router';
 export class RepositoryListComponent implements OnInit {
   repositories: IRepository[] = [];
   searchControl = new FormControl();
-  languageControl = new FormControl(); // новый FormControl для языка программирования
+  languageControl = new FormControl();
 
   constructor(private githubService: GithubService, private router: Router, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       this.searchControl.setValue(params['searchTerm'] || '');
-      this.languageControl.setValue(params['language'] || ''); // используйте languageControl
+      this.languageControl.setValue(params['language'] || '');
       this.performSearch(this.searchControl.value, this.languageControl.value);
     });
 
