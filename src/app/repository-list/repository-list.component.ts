@@ -3,7 +3,7 @@ import { IRepository } from '../repository-detail/repository-detail.component';
 import { GithubService } from '../../services/github.service';
 import { FormControl } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { SearchStateService } from '../../services/search-state.service';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-repository-list',
@@ -15,38 +15,36 @@ export class RepositoryListComponent implements OnInit {
   searchControl = new FormControl();
   selectedLanguage: string = '';
 
-  constructor(private githubService: GithubService, private searchStateService: SearchStateService) { }
+  constructor(private githubService: GithubService, private router: Router, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    this.searchStateService.getSearchTerm().subscribe(term => {
-      this.searchControl.setValue(term);
-    });
-
-    this.searchStateService.getSelectedLanguage().subscribe(language => {
-      this.selectedLanguage = language;
-    });
-
-    this.githubService.getRepositories().subscribe((data: IRepository[]) => {
-      this.repositories = data;
+    this.route.queryParams.subscribe(params => {
+      this.searchControl.setValue(params['searchTerm'] || '');
+      this.selectedLanguage = params['language'] || '';
+      this.githubService.searchRepositories(this.searchControl.value, this.selectedLanguage).subscribe((data: IRepository[]) => {
+        this.repositories = data;
+      });
     });
 
     this.searchControl.valueChanges.pipe(
       debounceTime(1000),
       distinctUntilChanged()
     ).subscribe(searchTerm => {
-      this.searchStateService.setSearchTerm(searchTerm);
-      this.githubService.searchRepositories(searchTerm, this.selectedLanguage).subscribe((data: IRepository[]) => {
-        this.repositories = data;
-      });
+      this.updateUrl(searchTerm, this.selectedLanguage);
     });
   }
 
   onLanguageSelect(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
     this.selectedLanguage = selectElement.value;
-    this.searchStateService.setSelectedLanguage(this.selectedLanguage);
-    this.githubService.searchRepositories(this.searchControl.value, this.selectedLanguage).subscribe((data: IRepository[]) => {
-      this.repositories = data;
+    this.updateUrl(this.searchControl.value, this.selectedLanguage);
+  }
+
+  updateUrl(searchTerm: string, language: string): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { searchTerm, language },
+      queryParamsHandling: 'merge'
     });
   }
 }
