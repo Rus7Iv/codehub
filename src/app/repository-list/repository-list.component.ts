@@ -1,4 +1,3 @@
-// repository-list.component.ts
 import { Component, OnInit } from '@angular/core';
 import { IRepository } from '../repository-detail/repository-detail.component';
 import { GithubService } from '../../services/github.service';
@@ -25,7 +24,7 @@ export class RepositoryListComponent implements OnInit {
     });
 
     this.searchControl.valueChanges.pipe(
-      debounceTime(400),
+      debounceTime(1000),
       distinctUntilChanged()
     ).subscribe(searchTerm => {
       this.githubService.searchRepositories(searchTerm, this.selectedLanguage).subscribe((data: IRepository[]) => {
