@@ -55,11 +55,21 @@ export class RepositoryListComponent implements OnInit {
     if (searchTerm.trim() === '' && language.trim() === '') {
       this.githubService.getRepositories().subscribe((data: IRepository[]) => {
         this.repositories = data;
+        this.getLanguagesForRepos();
       });
     } else if (searchTerm.trim() !== '' || language.trim() !== '') {
       this.githubService.searchRepositories(searchTerm, language).subscribe((data: IRepository[]) => {
         this.repositories = data;
+        this.getLanguagesForRepos();
       });
     }
+  }
+
+  getLanguagesForRepos(): void {
+    this.repositories.forEach(repo => {
+      this.githubService.getRepoLanguages(repo.owner.login, repo.name).subscribe(languages => {
+        repo.languages = Object.keys(languages);
+      });
+    });
   }
 }

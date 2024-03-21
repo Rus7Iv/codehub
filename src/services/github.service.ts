@@ -49,4 +49,8 @@ export class GithubService {
       map(response => response.items)
     );
   }
+
+  getRepoLanguages(owner: string, repo: string) {
+    return this.http.get(`https://api.github.com/repos/${owner}/${repo}/languages`);
+  }
 }

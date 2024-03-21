@@ -7,6 +7,7 @@
   <h2>{{ repo.name }}</h2>
   <p>{{ repo.description }}</p>
   <p>{{ repo.owner.login }}</p>
+  <p>Языки программирования: {{ repo.languages.join(', ') }}</p>
   <img [src]="repo.owner.avatar_url" alt="avatar" width="100px">
   <a [routerLink]="['/repository', repo.id]">Подробнее</a>
 </div>

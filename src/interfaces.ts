@@ -19,6 +19,7 @@ export interface IRepository {
   forks_count: number;
   stargazers_count: number;
   language: string;
+  languages: string[];
   owner: IOwner;
 }
 
