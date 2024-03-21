@@ -1,13 +1,8 @@
 <input [formControl]="searchControl" placeholder="Поиск репозиториев">
 <select [formControl]="languageControl">
   <option value="">Выберите язык</option>
-  <option value="javascript">JavaScript</option>
-  <option value="python">Python</option>
-  <option value="java">Java</option>
-  <option value="c++">C++</option>
-  <option value="c#">C#</option>
+  <option *ngFor="let language of languages" [value]="language.value">{{language.viewValue}}</option>
 </select>
-
 <div *ngFor="let repo of repositories">
   <h2>{{ repo.name }}</h2>
   <p>{{ repo.description }}</p>

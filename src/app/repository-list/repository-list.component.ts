@@ -4,6 +4,7 @@ import { GithubService } from '../../services/github.service';
 import { FormControl } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
+import { languages } from '../../stores/languages';
 
 @Component({
   selector: 'app-repository-list',
@@ -14,6 +15,7 @@ export class RepositoryListComponent implements OnInit {
   repositories: IRepository[] = [];
   searchControl = new FormControl();
   languageControl = new FormControl();
+  languages = languages;
 
   constructor(private githubService: GithubService, private router: Router, private route: ActivatedRoute) { }
 

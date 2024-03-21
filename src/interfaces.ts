@@ -36,3 +36,8 @@ export interface ICommit {
 export interface IGithubSearchResponse {
   items: IRepository[];
 }
+
+export interface ILanguages {
+  value: string;
+  viewValue: string;
+}
